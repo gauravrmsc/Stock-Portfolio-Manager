@@ -2,21 +2,23 @@
 package com.crio.warmup.stock;
 
 
-import com.crio.warmup.stock.dto.AnnualizedReturn;
-import com.crio.warmup.stock.dto.PortfolioTrade;
+//import com.crio.warmup.stock.dto.AnnualizedReturn;
+//import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
+//import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
+//import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+//import java.time.LocalDate;
+//import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -25,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
-
 
 public class PortfolioManagerApplication {
 
@@ -42,18 +43,19 @@ public class PortfolioManagerApplication {
   //  Now, run
   //  ./gradlew build and make sure that the build passes successfully
   //  There can be few unused imports, you will need to fix them to make the build pass.
-
+  
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
+    File f = resolveFileFromResources(args[0]);
 
-     return Collections.emptyList();
+    ArrayList<String> arr = new ArrayList<String>();
+    ObjectMapper m = getObjectMapper();
+    Ob[] o = m.readValue(f, Ob[].class);
+    for (int i = 0;i < o.length;i++) {
+      arr.add(o[i].getSymbol());
+    }
+    System.out.println(m.writeValueAsString(arr));
+    return arr;
   }
-
-
-
-
-
-
-
 
   private static void printJsonObject(Object object) throws IOException {
     Logger logger = Logger.getLogger(PortfolioManagerApplication.class.getCanonicalName());
@@ -103,11 +105,12 @@ public class PortfolioManagerApplication {
 
   public static List<String> debugOutputs() {
 
-     String valueOfArgument0 = "trades.json";
-     String resultOfResolveFilePathArgs0 = "";
-     String toStringOfObjectMapper = "";
-     String functionNameFromTestFileInStackTrace = "";
-     String lineNumberFromTestFileInStackTrace = "";
+    String valueOfArgument0 = "trades.json";
+    String resultOfResolveFilePathArgs0 = 
+        "/home/crio-user/workspace/gauravrmsc-ME_QMONEY/qmoney/bin/main/trades.json";
+    String toStringOfObjectMapper = "com.fasterxml.jackson.databind.ObjectMapper@f001896";
+    String functionNameFromTestFileInStackTrace = "main";
+    String lineNumberFromTestFileInStackTrace = "128";
 
 
     return Arrays.asList(new String[]{valueOfArgument0, resultOfResolveFilePathArgs0,
@@ -126,6 +129,46 @@ public class PortfolioManagerApplication {
 
 
 
+  }
+
+  static class Ob {
+
+    private String symbol;
+    private int quantity;
+    private String tradeType;
+    private String purchaseDate;
+    
+    public String getSymbol() {
+      return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+      this.symbol = symbol;
+    }
+
+    public int getQuantity() {
+      return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+      this.quantity = quantity;
+    }
+
+    public String getTradeType() {
+      return tradeType;
+    }
+
+    public void setTradeType(String tradeType) {
+      this.tradeType = tradeType;
+    }
+
+    public String getPurchaseDate() {
+      return purchaseDate;
+    }
+    
+    public void setPurchaseDate(String purchaseDate) {
+      this.purchaseDate = purchaseDate;
+    }
   }
 }
 
