@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - PortfolioManagerApplication",
+      "request": "launch",
+      "mainClass": "PortfolioManagerApplication",
+      "projectName": "ME_QMONEY_MODULE_JSON_PARSING"
+    },
+    {
+      "type": "java",
       "name": "Debug (Launch) - Module 1",
       "request": "launch",
       "mainClass": "${file}",
