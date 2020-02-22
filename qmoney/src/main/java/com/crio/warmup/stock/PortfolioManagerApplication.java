@@ -1,23 +1,24 @@
+
 package com.crio.warmup.stock;
 
-
-//import com.crio.warmup.stock.dto.AnnualizedReturn;
-//import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.AnnualizedReturn;
+import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.dto.TotalReturnsDto;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
-//import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-//import java.nio.file.Files;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-//import java.time.LocalDate;
-//import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-//import java.util.Comparator;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -120,12 +121,81 @@ public class PortfolioManagerApplication {
 
 
 
+
+
+
+
+  // TODO: CRIO_TASK_MODULE_REST_API
+  //  Copy the relavent code from #mainReadFile to parse the Json into PortfolioTrade list.
+  //  Now That you have the list of PortfolioTrade already populated in module#1
+  //  For each stock symbol in the portfolio trades,
+  //  Call Tiingo api (https://api.tiingo.com/tiingo/daily/<ticker>/prices?startDate=&endDate=&token=)
+  //  with
+  //   1. ticker = symbol in portfolio_trade
+  //   2. startDate = purchaseDate in portfolio_trade.
+  //   3. endD//ate = args[1]
+  //  Use RestTemplate#getForObject in order to call the API,
+  //  and deserialize the results in List<Candle>
+  //  Note - You may have to register on Tiingo to get the api_token.
+  //    Please refer the the module documentation for the steps.
+  //  Find out the closing price of the stock on the end_date and
+  //  return the list of all symbols in ascending order by its close value on endDate
+  //  Test the function using gradle commands below
+  //   ./gradlew run --args="trades.json 2020-01-01"
+  //   ./gradlew run --args="trades.json 2019-07-01"
+  //   ./gradlew run --args="trades.json 2019-12-03"
+  //  And make sure that its printing correct results.
+
+  public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
+    File f = resolveFileFromResources(args[0]);
+    RestTemplate rest = new RestTemplate();
+    ArrayList<TiingoCandle> candleArr = new ArrayList<TiingoCandle>();
+    ArrayList<String> arr = new ArrayList<String>();
+    String token = "4db1af6c86d3834c49e4ff3f2f073e2859aa4663"; 
+    String endDate = args[1];
+    ObjectMapper m = getObjectMapper();
+    Ob[] o = m.readValue(f, Ob[].class);
+    for (Ob obj:o) {
+      arr.add(obj.getSymbol());
+      String query = "https://api.tiingo.com/tiingo/daily/" + obj.symbol + "/prices?startDate=" + obj.purchaseDate + "&endDate=" + endDate + "&token=" + token;
+      String json = rest.getForObject(query, String.class);
+      TiingoCandle[] ting = m.readValue(json,TiingoCandle[].class);
+      TiingoCandle last = ting[ting.length - 1];
+      candleArr.add(last);
+    }
+    for (int i = 0;i < candleArr.size();i++) {
+      for (int j = 0;j < candleArr.size() - i - 1;j++) {
+        if (candleArr.get(j).getClose() > candleArr.get(j + 1).getClose()) {
+          TiingoCandle temp = candleArr.get(j);
+          candleArr.set(j,candleArr.get(j + 1));
+          candleArr.set(j + 1,temp);
+          String temp1 = arr.get(j);
+          arr.set(j,arr.get(j + 1));
+          arr.set(j + 1,temp1);
+
+        }
+      }
+    }
+   
+    return arr;
+     
+     
+  }
+
+
+
+
+
+
+
+
+
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
-    printJsonObject(mainReadFile(args));
-
+    // printJsonObject(mainReadFile(args));
+    printJsonObject(mainReadQuotes(args));
 
 
   }
