@@ -4,7 +4,6 @@ package com.crio.warmup.stock;
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
-import com.crio.warmup.stock.dto.TotalReturnsDto;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -45,6 +44,9 @@ public class PortfolioManagerApplication {
   // ./gradlew build and make sure that the build passes successfully
   // There can be few unused imports, you will need to fix them to make the build
   // pass.
+  static RestTemplate rest = new RestTemplate();
+  static String token = "4db1af6c86d3834c49e4ff3f2f073e2859aa4663";
+  static String endDate;
 
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
     File f = resolveFileFromResources(args[0]);
@@ -146,9 +148,7 @@ public class PortfolioManagerApplication {
   public static List<AnnualizedReturn> mainCalculateSingleReturn(String[] args) 
       throws IOException, URISyntaxException {
     File f = resolveFileFromResources(args[0]);
-    RestTemplate rest = new RestTemplate();
-    String token = "4db1af6c86d3834c49e4ff3f2f073e2859aa4663";
-    String endDate = args[1];
+    endDate = args[1];
     ObjectMapper m = getObjectMapper();
     Ob[] o = m.readValue(f, Ob[].class);
     ArrayList<AnnualizedReturn> annualRetArr = new ArrayList<AnnualizedReturn>();
@@ -229,10 +229,9 @@ public class PortfolioManagerApplication {
 
   public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
     File f = resolveFileFromResources(args[0]);
-    RestTemplate rest = new RestTemplate();
     ArrayList<TiingoCandle> candleArr = new ArrayList<TiingoCandle>();
     ArrayList<String> arr = new ArrayList<String>();
-    String token = "4db1af6c86d3834c49e4ff3f2f073e2859aa4663";
+    
     String endDate = args[1];
     ObjectMapper m = getObjectMapper();
     Ob[] o = m.readValue(f, Ob[].class);
