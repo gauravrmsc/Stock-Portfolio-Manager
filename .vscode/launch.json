@@ -5,6 +5,13 @@
       "type": "java",
       "name": "CodeLens (Launch) - PortfolioManagerApplication",
       "request": "launch",
+      "mainClass": "com.crio.warmup.stock.PortfolioManagerApplication",
+      "projectName": "qmoney"
+    },
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - PortfolioManagerApplication",
+      "request": "launch",
       "mainClass": "PortfolioManagerApplication",
       "projectName": "ME_QMONEY_MODULE_JSON_PARSING"
     },

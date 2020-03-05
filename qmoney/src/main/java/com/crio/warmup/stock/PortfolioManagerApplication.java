@@ -118,7 +118,7 @@ public class PortfolioManagerApplication {
     String resultOfResolveFilePathArgs0 = "/home/crio-user/workspace/"
         + "gauravrmsc-ME_QMONEY/qmoney/bin/main/trades.json";
     String toStringOfObjectMapper = "com.fasterxml.jackson.databind.ObjectMapper@f001896";
-    String functionNameFromTestFileInStackTrace = "main";
+    String functionNameFromTestFileInStackTrace = "mainReadFile";
     String lineNumberFromTestFileInStackTrace = "128";
     return Arrays.asList(new String[] { valueOfArgument0, resultOfResolveFilePathArgs0, 
         toStringOfObjectMapper,
@@ -267,7 +267,7 @@ public class PortfolioManagerApplication {
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
     // printJsonObject(mainReadFile(args));
-    printJsonObject(mainReadQuotes(args));
+    printJsonObject(mainCalculateSingleReturn(args));
 
   }
 
