@@ -58,6 +58,14 @@ public class TiingoCandle implements Candle {
     this.date = timeStamp;
   }
 
+  public LocalDate getVolume() {
+    return date;
+  }
+
+  public void setVolume(LocalDate timeStamp) {
+    this.date = timeStamp;
+  }
+
   @Override
   public String toString() {
     return "TiingoCandle{"
