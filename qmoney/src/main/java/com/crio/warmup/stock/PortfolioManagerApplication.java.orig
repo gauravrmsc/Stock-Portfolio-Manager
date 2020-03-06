@@ -1,14 +1,16 @@
-
+/*
 package com.crio.warmup.stock;
-
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.log.UncaughtExceptionHandler;
+
+import com.crio.warmup.stock.dto.AnnualizedReturn;
+import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TotalReturnsDto;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.crio.warmup.stock.portfolio.PortfolioManager;
 import com.crio.warmup.stock.portfolio.PortfolioManagerFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
@@ -21,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -266,6 +269,22 @@ public class PortfolioManagerApplication {
 
   }
 
+
+public class PortfolioManagerApplication {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // TODO: CRIO_TASK_MODULE_REFACTOR
   //  Once you are done with the implementation inside PortfolioManagerImpl and
   //  PortfolioManagerFactory,
@@ -282,20 +301,11 @@ public class PortfolioManagerApplication {
 
   public static List<AnnualizedReturn> mainCalculateReturnsAfterRefactor(String[] args)
       throws Exception {
-    LocalDate endDate1 = LocalDate.parse(args[1]);
-    PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager(rest);
-    List<PortfolioTrade> portfolioTrades = new ArrayList<PortfolioTrade>();
-    File f = resolveFileFromResources(args[0]);
-    endDate1 = LocalDate.parse(args[1]);
-    ObjectMapper m = getObjectMapper();
-    Ob[] o = m.readValue(f, Ob[].class);
-    for (Ob obj: o) {
-      PortfolioTrade portfolioTrade = 
-          new PortfolioTrade(obj.getSymbol(), obj.getQuantity(),
-          LocalDate.parse(obj.getPurchaseDate()));
-      portfolioTrades.add(portfolioTrade);    
-    } 
-    return portfolioManager.calculateAnnualizedReturn(portfolioTrades, endDate1);
+       String file = args[0];
+       LocalDate endDate = LocalDate.parse(args[1]);
+       String contents = readFileAsString(file);
+       ObjectMapper objectMapper = getObjectMapper();
+       return portfolioManager.calculateAnnualizedReturn(Arrays.asList(portfolioTrades), endDate);
   }
 
 
@@ -303,7 +313,9 @@ public class PortfolioManagerApplication {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
-    printJsonObject(mainCalculateReturnsAfterRefactor(args));
+    // printJsonObject(mainReadFile(args));
+    printJsonObject(mainCalculateSingleReturn(args));
+
   }
 
   static class Ob {
@@ -346,3 +358,11 @@ public class PortfolioManagerApplication {
     }
   }
 }
+
+
+
+    printJsonObject(mainCalculateReturnsAfterRefactor(args));
+  }
+}
+
+*/
