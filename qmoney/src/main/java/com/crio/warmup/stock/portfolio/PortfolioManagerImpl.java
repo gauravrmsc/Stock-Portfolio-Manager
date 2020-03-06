@@ -98,6 +98,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
       String query = "https://api.tiingo.com/tiingo/daily/" + obj.getSymbol() 
           + "/prices?startDate=" + obj.getPurchaseDate()
           + "&endDate=" + endDate + "&token=" + token;
+      if (restTemplate == null ){
+        restTemplate = new RestTemplate();
+      }    
       String json = restTemplate.getForObject(query, String.class);
       
         try {
