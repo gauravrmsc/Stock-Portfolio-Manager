@@ -77,7 +77,13 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
       throws JsonProcessingException {
-     return null;
+        String uri=buildUri(symbol, from, to);
+        String json = restTemplate.getForObject(uri, String.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); 
+        TiingoCandle[] ting= objectMapper.readValue(json, TiingoCandle[].class);
+        
+     return Arrays.asList(ting);
   }
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
@@ -91,22 +97,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(
         List<PortfolioTrade> portfolioTrades, LocalDate endDate) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); 
         ArrayList<AnnualizedReturn> annualRetArr = new ArrayList<AnnualizedReturn>();  
-    for ( PortfolioTrade obj: portfolioTrades) {
-      String query = "https://api.tiingo.com/tiingo/daily/" + obj.getSymbol() 
-          + "/prices?startDate=" + obj.getPurchaseDate()
-          + "&endDate=" + endDate + "&token=" + token;
-      if (restTemplate == null ){
-        restTemplate = new RestTemplate();
-      }    
-      String json = restTemplate.getForObject(query, String.class);
-      
-        try {
-        TiingoCandle[] ting= objectMapper.readValue(json, TiingoCandle[].class);
-        TiingoCandle last = ting[ting.length - 1];
-        double buyPrice = ting[0].getOpen();
+    for ( PortfolioTrade obj: portfolioTrades) {  
+      try {
+        List<Candle> ting = getStockQuote(obj.getSymbol(), obj.getPurchaseDate(), endDate);
+        TiingoCandle last = (TiingoCandle)ting.get(ting.size()-1);
+        double buyPrice = ting.get(0).getOpen();
         double sellPrice = last.getClose();
         PortfolioTrade portfolioTrade = 
             new PortfolioTrade(obj.getSymbol(), obj.getQuantity(),
@@ -114,9 +110,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
         annualRetArr.add(PortfolioManagerApplication.calculateAnnualizedReturns(endDate, 
            portfolioTrade, buyPrice, sellPrice));
       } catch (JsonProcessingException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
+
     } 
     for (int i = 0; i < annualRetArr.size(); i++) {
       for (int j = 0; j < annualRetArr.size() - i - 1; j++) {
