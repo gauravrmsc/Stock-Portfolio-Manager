@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - AlphavantageService",
+      "request": "launch",
+      "mainClass": "com.crio.warmup.stock.quotes.AlphavantageService",
+      "projectName": "qmoney"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - PortfolioManagerApplication",
       "request": "launch",
       "mainClass": "com.crio.warmup.stock.PortfolioManagerApplication",
