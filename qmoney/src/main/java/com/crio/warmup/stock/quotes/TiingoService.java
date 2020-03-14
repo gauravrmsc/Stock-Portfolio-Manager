@@ -28,6 +28,7 @@ public class TiingoService implements StockQuotesService {
       StockQuoteServiceException  {
     try {
       String uri = buildUri(symbol, from, to);
+      System.out.println(uri);
       String json = restTemplate.getForObject(uri, String.class);
       ObjectMapper objectMapper = new ObjectMapper();
       objectMapper.registerModule(new JavaTimeModule()); 
@@ -43,7 +44,7 @@ public class TiingoService implements StockQuotesService {
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
     String uriTemplate = "https://api.tiingo.com/tiingo/daily/" + symbol + "/prices?"
-         + "startDate=" + startDate + "&endDate=" + endDate + "&token=+"
+         + "startDate=" + startDate + "&endDate=" + endDate + "&token="
          + token;
     return uriTemplate;        
 
