@@ -3,9 +3,9 @@ package com.crio.warmup.stock.quotes;
 
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
@@ -24,14 +24,21 @@ public class TiingoService implements StockQuotesService {
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
-      throws JsonMappingException, JsonProcessingException  {
-    String uri = buildUri(symbol, from, to);
-    String json = restTemplate.getForObject(uri, String.class);
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule()); 
-    TiingoCandle[] ting = objectMapper.readValue(json, TiingoCandle[].class);
+      throws JsonMappingException, JsonProcessingException,
+      StockQuoteServiceException  {
+    try {
+      String uri = buildUri(symbol, from, to);
+      String json = restTemplate.getForObject(uri, String.class);
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule()); 
+      TiingoCandle[] ting = objectMapper.readValue(json, TiingoCandle[].class);
         
-    return Arrays.asList(ting);
+      return Arrays.asList(ting);
+
+    } catch (NullPointerException e) {
+      throw new StockQuoteServiceException(e.toString());
+    }
+    
   }
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {

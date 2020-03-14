@@ -7,7 +7,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import com.crio.warmup.stock.dto.AlphavantageCandle;
 import com.crio.warmup.stock.dto.AlphavantageDailyResponse;
 import com.crio.warmup.stock.dto.Candle;
-
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,15 +48,17 @@ public class AlphavantageService implements StockQuotesService {
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonMappingException, JsonProcessingException {
+      throws JsonMappingException, JsonProcessingException,
+      StockQuoteServiceException {
     List<Candle> stockQuotes = new ArrayList<Candle>();
-    String uri = buildURl(symbol, from, to);
-    String json = restTemplate.getForObject(uri, String.class);
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    JsonNode node = objectMapper.readValue(json, JsonNode.class);
-    JsonNode node1 = node.get("Time Series (Daily)");
     try {
+      
+      String uri = buildURl(symbol, from, to);
+      String json = restTemplate.getForObject(uri, String.class);
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+      JsonNode node = objectMapper.readValue(json, JsonNode.class);
+      JsonNode node1 = node.get("Time Series (Daily)");
       HashMap<String,AlphavantageCandle> hm = 
           objectMapper.readValue(node1.toString(), 
           new TypeReference<HashMap<String,AlphavantageCandle>>(){});
@@ -72,6 +74,7 @@ public class AlphavantageService implements StockQuotesService {
       stockQuotes = sortCandles(stockQuotes);
     } catch (NullPointerException e) {
       System.out.println("Error Fetching Data");
+      throw new StockQuoteServiceException(e.toString());
     }
     return stockQuotes;
   }

@@ -83,7 +83,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
 
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException {
+      throws JsonProcessingException, StockQuoteServiceException {
         if (stockQuoteService != null) {
           return stockQuoteService.getStockQuote(symbol, from, to);
         } 
@@ -107,7 +107,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(
-        List<PortfolioTrade> portfolioTrades, LocalDate endDate) {
+        List<PortfolioTrade> portfolioTrades, LocalDate endDate) 
+            throws StockQuoteServiceException {
         ArrayList<AnnualizedReturn> annualRetArr = new ArrayList<AnnualizedReturn>();  
     for ( PortfolioTrade obj: portfolioTrades) {  
       try {
