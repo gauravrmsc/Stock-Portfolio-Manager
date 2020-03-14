@@ -146,19 +146,20 @@ public class PortfolioManagerImpl implements PortfolioManager {
     }
     List <Future<List<AnnualizedReturn>>> futures = executorService.invokeAll(callableTasks); 
     for (Future future: futures) {
-		try {
-			
-			  annualizedReturnsOutput.addAll((List<AnnualizedReturn>)future.get());
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}    }
+			  try {
+        annualizedReturnsOutput.addAll((List<AnnualizedReturn>) future.get());
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+		    }
     sort(annualizedReturnsOutput);    
     return annualizedReturnsOutput;
   }
 
   private List<AnnualizedReturn> sort(List<AnnualizedReturn> annualRetArr) {
+    if (annualRetArr.size() == 0) {
+      return annualRetArr;
+    }
     for (int i = 0; i < annualRetArr.size(); i++) {
       for (int j = 0; j < annualRetArr.size() - i - 1; j++) {
         if (annualRetArr.get(j).getAnnualizedReturn() < annualRetArr.get(j + 1)
