@@ -56,19 +56,23 @@ public class AlphavantageService implements StockQuotesService {
     objectMapper.registerModule(new JavaTimeModule());
     JsonNode node = objectMapper.readValue(json, JsonNode.class);
     JsonNode node1 = node.get("Time Series (Daily)");
-    HashMap<String,AlphavantageCandle> hm = 
-        objectMapper.readValue(node1.toString(), 
-        new TypeReference<HashMap<String,AlphavantageCandle>>(){});
-    Set<Map.Entry<String,AlphavantageCandle>> set = hm.entrySet();
-    for (Map.Entry<String,AlphavantageCandle> n:set) {
-      LocalDate date = LocalDate.parse(n.getKey());
-      if (date.compareTo(from) >= 0 && to.compareTo(date) >= 0) {
-        AlphavantageCandle c = n.getValue();
-        c.setDate(date);
-        stockQuotes.add(c);
+    try {
+      HashMap<String,AlphavantageCandle> hm = 
+          objectMapper.readValue(node1.toString(), 
+          new TypeReference<HashMap<String,AlphavantageCandle>>(){});
+      Set<Map.Entry<String,AlphavantageCandle>> set = hm.entrySet();
+      for (Map.Entry<String,AlphavantageCandle> n:set) {
+        LocalDate date = LocalDate.parse(n.getKey());
+        if (date.compareTo(from) >= 0 && to.compareTo(date) >= 0) {
+          AlphavantageCandle c = n.getValue();
+          c.setDate(date);
+          stockQuotes.add(c);
+        }
       }
+      stockQuotes = sortCandles(stockQuotes);
+    } catch (NullPointerException e) {
+      System.out.println("Error Fetching Data");
     }
-    stockQuotes = sortCandles(stockQuotes);
     return stockQuotes;
   }
 

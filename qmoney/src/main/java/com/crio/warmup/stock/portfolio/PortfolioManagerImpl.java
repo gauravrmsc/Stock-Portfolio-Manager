@@ -111,7 +111,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
     for ( PortfolioTrade obj: portfolioTrades) {  
       try {
         List<Candle> ting1 = getStockQuote(obj.getSymbol(), obj.getPurchaseDate(), endDate);
-        TiingoCandle last = (TiingoCandle)ting1.get(ting1.size()-1);
+        Candle last = ting1.get(ting1.size()-1);
         double buyPrice = ting1.get(0).getOpen();
         double sellPrice = last.getClose();
         PortfolioTrade portfolioTrade = 
