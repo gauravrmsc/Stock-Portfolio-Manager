@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +28,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
+
 
 public class PortfolioManagerImpl implements PortfolioManager {
   RestTemplate restTemplate;
@@ -126,6 +128,37 @@ public class PortfolioManagerImpl implements PortfolioManager {
       }
 
     } 
+    sort(annualRetArr);
+    return annualRetArr;
+  }
+
+  @Override
+  public List<AnnualizedReturn> calculateAnnualizedReturnParallel(List<PortfolioTrade> portfolioTrades,
+      LocalDate endDate, int numThreads) throws InterruptedException, StockQuoteServiceException {
+    ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+    List<Callable<List<AnnualizedReturn>>> callableTasks =new ArrayList<>(); 
+    List <AnnualizedReturn> annualizedReturnsOutput = new ArrayList<AnnualizedReturn>();
+    for (PortfolioTrade portfolioTrade: portfolioTrades) {
+      List<PortfolioTrade> list = new ArrayList<PortfolioTrade>();
+      list.add(portfolioTrade);
+      Call obj = new Call(list,endDate);
+      callableTasks.add(obj);
+    }
+    List <Future<List<AnnualizedReturn>>> futures = executorService.invokeAll(callableTasks); 
+    for (Future future: futures) {
+		try {
+			
+			  annualizedReturnsOutput.addAll((List<AnnualizedReturn>)future.get());
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}    }
+    sort(annualizedReturnsOutput);    
+    return annualizedReturnsOutput;
+  }
+
+  private List<AnnualizedReturn> sort(List<AnnualizedReturn> annualRetArr) {
     for (int i = 0; i < annualRetArr.size(); i++) {
       for (int j = 0; j < annualRetArr.size() - i - 1; j++) {
         if (annualRetArr.get(j).getAnnualizedReturn() < annualRetArr.get(j + 1)
@@ -138,7 +171,21 @@ public class PortfolioManagerImpl implements PortfolioManager {
     }
     return annualRetArr;
   }
+  
+  class Call implements Callable<List<AnnualizedReturn>> {
+    List<PortfolioTrade> portfolioTrades;
+    LocalDate endDate;
 
+    public Call(List<PortfolioTrade> portfolioTrades,LocalDate endDate) {
+      this.portfolioTrades = portfolioTrades;
+      this.endDate = endDate;
+    }
+    @Override
+    public List<AnnualizedReturn> call() throws Exception {
+      return calculateAnnualizedReturn(portfolioTrades, endDate);
+    }
+    
+  }
 
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Modify the function #getStockQuote and start delegating to calls to
