@@ -152,7 +152,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
 			  try {
         annualizedReturnsOutput.addAll((List<AnnualizedReturn>) future.get());
       } catch (ExecutionException e) {
-        e.printStackTrace();
+          throw new StockQuoteServiceException(e.getMessage());
       }
 		    }
     sort(annualizedReturnsOutput);    
@@ -185,8 +185,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
       this.endDate = endDate;
     }
     @Override
-    public List<AnnualizedReturn> call() throws Exception {
-      return calculateAnnualizedReturn(portfolioTrades, endDate);
+    public List<AnnualizedReturn> call() throws StockQuoteServiceException {
+      List<AnnualizedReturn> lst =calculateAnnualizedReturn(portfolioTrades, endDate);
+      return lst;
     }
     
   }
