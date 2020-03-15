@@ -138,6 +138,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
     ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
     List<Callable<List<AnnualizedReturn>>> callableTasks =new ArrayList<>(); 
     List <AnnualizedReturn> annualizedReturnsOutput = new ArrayList<AnnualizedReturn>();
+    if (portfolioTrades == null || endDate == null) {
+      return annualizedReturnsOutput;
+    }
     for (PortfolioTrade portfolioTrade: portfolioTrades) {
       List<PortfolioTrade> list = new ArrayList<PortfolioTrade>();
       list.add(portfolioTrade);
@@ -157,7 +160,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   private List<AnnualizedReturn> sort(List<AnnualizedReturn> annualRetArr) {
-    if (annualRetArr.size() <=1) {
+    if (annualRetArr==null||annualRetArr.size() <=1) {
       return annualRetArr;
     }
     for (int i = 0; i < annualRetArr.size(); i++) {
@@ -193,5 +196,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
   //  stockQuoteService provided via newly added constructor of the class.
   //  You also have a liberty to completely get rid of that function itself, however, make sure
   //  that you do not delete the #getStockQuote function.
-
+/*public static void main(String args[]){
+    try {
+      new PortfolioManagerImpl(new RestTemplate()).calculateAnnualizedReturnParallel(null, null, 10);
+    } catch (InterruptedException | StockQuoteServiceException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+}*/
 }
