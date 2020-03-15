@@ -157,7 +157,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   private List<AnnualizedReturn> sort(List<AnnualizedReturn> annualRetArr) {
-    if (annualRetArr.size() == 0) {
+    if (annualRetArr.size() <=1) {
       return annualRetArr;
     }
     for (int i = 0; i < annualRetArr.size(); i++) {
